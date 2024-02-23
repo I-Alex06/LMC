@@ -1,0 +1,413 @@
+Single line comment  %ceva
+Block comment /*ceva
+altceva*/
+
+var(X)	    succeeds if X is currently an un-instantiated variable.
+nonvar(X)	succeeds if X is not a variable, or already instantiated
+atom(X)	    is true if X currently stands for an atom
+number(X)	is true if X currently stands for a number
+integer(X)	is true if X currently stands for an integer
+float(X)	is true if X currently stands for a real number.
+atomic(X)	is true if X currently stands for a number or an atom.
+compound(X)	is true if X currently stands for a structure.
+ground(X)	succeeds if X does not contain any un-instantiated variables.
+
+The functor(T,F,N) Predicate
+This returns true if F is the principal functor of T, and N is the arity of F.
+Note − Arity means the number of attributes.
+functor - Numele "functiei"
+
+The arg(N,Term,A) Predicate
+This returns true if A is the Nth argument in Term. Otherwise returns false.
+
+The ../2 Predicate
+This is another predicate represented as double dot (..). This takes 2 arguments, so ‘/2’ is written. 
+So Term = .. L, this is true if L is a list that contains the functor of Term, followed by its arguments.
+
+
+The findall/3 Predicate
+This predicate is used to make a list of all solutions X, from the predicate P. The returned list will be L. So we will read this as “find all of the Xs, such that X is a solution of predicate P and put the list of results in L”. Here this predicate stores the results in the same order, in which Prolog finds them. And if there are duplicate solutions, then all will come into the resultant list, and if there is infinite solution, then the process will never terminate.
+
+Now we can also do some advancement on them. The second argument, which is the goal, that might be a compound goal. Then the syntax will be as findall(X, (Predicate on X, other goal), L)
+
+And also the first argument can be a term of any complexity. So let us see the examples of these few rules, and check the output.
+
+Example
+| ?- findall(X, member(X, [1,2,3,4]), Results).
+
+Results = [1,2,3,4]
+
+yes
+| ?- findall(X, (member(X, [1,2,3,4]), X > 2), Results).
+
+Results = [3,4]
+
+yes
+| ?- findall(X/Y, (member(X,[1,2,3,4]), Y is X * X), Results).
+
+Results = [1/1,2/4,3/9,4/16]
+yes
+
+
+The setof/3 Predicate
+The setof/3 is also like findall/3, but here it removes all of the duplicate outputs, and the answers will be sorted.
+
+If any variable is used in the goal, then that will not appear in the first argument, setof/3 will return a separate result for each possible instantiation of that variable.
+
+Let us see one example to understand this setof/3. Suppose we have a knowledge base as shown below −
+
+age(peter, 7).
+age(ann, 5).
+age(pat, 8).
+age(tom, 5).
+age(ann, 5).
+Here we can see that age(ann, 5) has two entries in the knowledge base. And the ages are not sorted, and names are not sorted lexicographically in this case. Now let us see one example of setof/3 usage.
+
+Example
+| ?- setof(Child, age(Child,Age),Results).
+
+Age = 5
+Results = [ann,tom] ? ;
+
+Age = 7
+Results = [peter] ? ;
+
+Age = 8
+Results = [pat]
+(16 ms) yes
+
+Here we can see the ages and the names both are coming sorted. For age 5, there is two entries, so the predicate has created one list corresponding to the age value, with two elements. And the duplicate entry is present only once.
+We can use the nested call of setof/3, to collect together the individual results. We will see another example, where the first argument will be Age/Children. As the second argument, it will take another setof like before. So this will return a list of (age/Children) pair. Let us see this in the prolog execution −
+
+Example
+| ?- setof(Age/Children, setof(Child,age(Child,Age), Children), AllResults).
+AllResults = [5/[ann,tom],7/[peter],8/[pat]]
+yes
+
+Now if we do not care about a variable that does not appear in the first argument, then we can use the following example −
+Example
+| ?- setof(Child, Age^age(Child,Age), Results).
+Results = [ann,pat,peter,tom]
+yes
+
+Here we are using the upper caret symbol (^), this indicates that the Age is not in the first argument. So we will read this as, “Find the set of all children, such that the child has an Age (whatever it may be), and put the result in Results”.
+
+The bagof/3 Predicate
+The bagof/3 is like setof/3, but here it does not remove the duplicate outputs, and the answers may not be sorted.
+
+
+random(L,H,X).	Get random value between L and H
+between(L,H,X).	Get all values between L and H   (pe rand, nu lista)
+succ(X,Y).	    Add 1 and assign it to X
+abs(X).	        Get absolute value of X
+max(X,Y).	    Get largest value between X and Y
+min(X,Y).	    Get smallest value between X and Y
+round(X).	    Round a value near to X
+truncate(X).	Convert float to integer, delete the fractional part
+floor(X).	    Round down
+ceiling(X). 	Round up
+sqrt(X).	    Square root
+Besides these, there are some other predicates such as sin, cos, tan, asin, acos, atan, atan2, sinh, cosh, tanh, asinh, acosh, atanh, log, log10, exp, pi, etc.
+
+X > Y	X is greater than Y
+X < Y	X is less than Y
+X >= Y	X is greater than or equal to Y
+X =< Y	X is less than or equal to Y
+X =:= Y	the X and Y values are equal
+X =\= Y	the X and Y values are not equal
+
++	Addition
+-	Subtraction
+*	Multiplication
+/	Division
+**	Power
+//	Integer Division
+mod	Modulus             # D is 100 mod 30,write('100 mod 30 is '),write(D),nl.
+
+Disjunction (OR logic) can be implemented using the semi-colon (;) operator.
+child_of(X,Y) :- father(X,Y);mother(X,Y).
+
+Max Number in list 
+
+max_of_two(X,Y,X) :- X >= Y.
+max_of_two(X,Y,Y) :- X < Y.
+list_max_elem([X],X).
+list_max_elem([X,Y|Rest],Max) :-
+   list_max_elem([Y|Rest],MaxRest),
+   max_of_two(X,MaxRest,Max).
+
+MergeSort
+
+mergesort([],[]).    /* covers special case */
+mergesort([A],[A]).
+mergesort([A,B|R],S) :-
+   split([A,B|R],L1,L2),
+   mergesort(L1,S1),
+   mergesort(L2,S2),
+   merge(S1,S2,S).
+   
+split([],[],[]).
+split([A],[A],[]).
+split([A,B|R],[A|Ra],[B|Rb]) :-
+   split(R,Ra,Rb).
+merge(A,[],A).
+merge([],B,B).
+merge([A|Ra],[B|Rb],[A|M]) :-
+   A =< B, merge(Ra,[B|Rb],M).
+merge([A|Ra],[B|Rb],[B|M]) :-
+   A > B, merge([A|Ra],Rb,M).
+
+
+is_list(+Term)
+True if Term is bound to the empty list ([]) or a compound term with name‘[|]’135 and arity 2 and the second argument is a list.136 This predicate acts as if defined by the definition below on acyclic terms. The implementation safely fails if Term represents a cyclic list.
+is_list(X) :-
+        var(X), !,
+        fail.
+is_list([]).
+is_list([_|T]) :-
+        is_list(T).
+[semidet]memberchk(?Elem, +List)
+True when Elem is an element of List. This‘chk' variant of member/2 is semi deterministic and typically used to test membership of a list. Raises a type error if scanning List encounters a non-list. Note that memberchk/2 does not perform a full list typecheck. For example, memberchk(a, [a|b]) succeeds without error. If List is cyclic and Elem is not a member of List, memberchk/2 eventually raises a type error.137
+[ISO]length(?List, ?Length)
+True if Length represents the number of elements in List. This predicate is a true relation and can be used to find the length of a list or produce a list (holding variables) of length Length. The predicate is non-deterministic, producing lists of increasing length if List is a partial list and Length is a variable.
+?- length(List,4).
+List = [_27940,_27946,_27952,_27958].
+
+?- length(List,Length).
+List = [], Length = 0 ;
+List = [_24698], Length = 1 ;
+List = [_24698,_25826], Length = 2
+...
+It raises errors if Length is bound to a non-integer or a negative integer or if List is neither a list nor a partial list. This error condition includes cyclic lists:138
+
+?- A=[1,2,3|A], length(A,L).
+ERROR: Type error: `list' expected ...
+Covering an edge case, the predicate fails if the tail of List is equivalent to Length:139
+
+?- List=[1,2,3|Length],length(List,Length).
+false.
+
+?- length(Length,Length).
+false.
+
+sort(+List, -Sorted)
+True if Sorted can be unified with a list holding the elements of List, sorted to the standard order of terms (see section 4.6). Duplicates are removed. The implementation is in C, using natural merge sort.140 The sort/2 predicate can sort a cyclic list, returning a non-cyclic version with the same elements.
+Note that List may contain non-ground terms. If Sorted is unbound at call-time, for each consecutive pair of elements in Sorted, the relation E1 @< E2 will hold. However, unifying a variable in Sorted may cause this relation to become invalid, even unifying a variable in Sorted with another (older) variable. See also section 4.6.1.
+
+sort(+Key, +Order, +List, -Sorted)
+True when Sorted can be unified with a list holding the element of List. Key determines which part of each element in List is used for comparing two term and Order describes the relation between each set of consecutive elements in Sorted.141
+If Key is the integer zero (0), the entire term is used to compare two elements. Using Key=0 can be used to sort arbitrary Prolog terms. Other values for Key can only be used with compound terms or dicts (see section 5.4). An integer key extracts the Key-th argument from a compound term. An integer or atom key extracts the value from a dict that is associated with the given key. A type_error is raised if the list element is of the wrong type and an existence_error is raised if the compound has not enough argument or the dict does not contain the requested key.
+
+Deeper nested elements of structures can be selected by using a list of keys for the Key argument.
+
+The Order argument is described in the table below:142
+
+Order	Ordering	Duplicate handling
+@<	ascending	remove
+@=<	ascending	keep
+@>	descending	remove
+@>=	descending	keep
+The sort is stable, which implies that, if duplicates are kept, the order of duplicates is not changed. If duplicates are removed, only the first element of a sequence of duplicates appears in Sorted.
+
+This predicate supersedes most of the other sorting primitives, for example:
+
+sort(List, Sorted)     :- sort(0,  @<, List,  Sorted).
+msort(List, Sorted)    :- sort(0, @=<, List,  Sorted).
+keysort(Pairs, Sorted) :- sort(1, @=<, Pairs, Sorted).
+The following example sorts a list of rows, for example resulting from csv_read_file/2) ascending on the 3th column and descending on the 4th column:
+
+    sort(4, @>=, Rows0, Rows1),
+    sort(3, @=<, Rows1, Sorted).
+See also sort/2 (ISO), msort/2, keysort/2, predsort/3 and order_by/2.
+
+msort(+List, -Sorted)
+Equivalent to sort/2, but does not remove duplicates. Raises a type_error if List is a cyclic list or not a list.
+[ISO]keysort(+List, -Sorted)
+Sort a list of pairs. List must be a list of Key-Value pairs, terms whose principal functor is (-)/2. List is sorted on Key according to the standard order of terms (see section 4.6.1). Duplicates are not removed. Sorting is stable with regard to the order of the Values, i.e., the order of multiple elements that have the same Key is not changed.
+The keysort/2 predicate is often used together with library library(pairs). It can be used to sort lists on different or multiple criteria. For example, the following predicates sorts a list of atoms according to their length, maintaining the initial order for atoms that have the same length.
+
+:- use_module(library(pairs)).
+
+sort_atoms_by_length(Atoms, ByLength) :-
+        map_list_to_pairs(atom_length, Atoms, Pairs),
+        keysort(Pairs, Sorted),
+        pairs_values(Sorted, ByLength).
+predsort(+Pred, +List, -Sorted)
+Sorts similar to sort/2, but determines the order of two terms by calling Pred(-Delta, +E1, +E2) . This call must unify Delta with one of <, > or =. Duplicates are removed (i.e. equivalence classes of elements as defined by Pred are collapsed to a single element in Sorted) If the built-in predicate compare/3 is used, the result is the same as sort/2. See also keysort/2.
+
+
+
+fail
+Always fail. The predicate fail/0 is translated into a single virtual machine instruction.
+[ISO]false
+Same as fail, but the name has a more declarative connotation.
+[ISO]true
+Always succeed. The predicate true/0 is translated into a single virtual machine instruction.
+[ISO]repeat
+Always succeed, provide an infinite number of choice points.
+[ISO]!
+Cut. Discard all choice points created since entering the predicate in which the cut appears. In other words, commit to the clause in which the cut appears and discard choice points that have been created by goals to the left of the cut in the current clause. Meta calling is opaque to the cut. This implies that cuts that appear in a term that is subject to meta-calling (call/1) only affect choice points created by the meta-called term. The following control structures are transparent to the cut: ;/2, ->/2 and *->/2. Cuts appearing in the condition part of ->/2 and *->/2 are opaque to the cut. The table below explains the scope of the cut with examples. Prunes here means “prunes X choice point created by X” .
+t0 :- (a, !, b).	% prunes a/0 and t0/0
+t1 :- (a, !, fail ; b).	% prunes a/0 and t1/0
+t2 :- (a -> b, ! ; c).	% prunes b/0 and t2/0
+t3 :- (a, !, b -> c ; d).	% prunes a/0
+t4 :- call((a, !, fail ; b)).	% prunes a/0
+t5 :- \+(a, !, fail).	% prunes a/0
+[ISO]:Goal1 , :Goal2
+Conjunction (and). True if both Goal1 and Goal2 are true.
+[ISO]:Goal1 ; :Goal2
+Disjunction (or). True if either Goal1 or Goal2 succeeds. Note that the semantics change if Goal1 contains ->/2 or *->/2. ;/2 is transparent to cuts. See !/0 for details. For example:
+?- (between(1,2,X) ; X = a).
+X = 1 ;
+X = 2 ;
+X = a.
+It is strongly advised to always use parenthesis around disjunctions. Conjunctions inside a disjunction should not use parenthesis. Traditionally the ; is placed at the start of the line rather than at the end because a ; at the end of a line is easily overlooked. Below is an example of the preferred style used in SWI-Prolog.72
+
+p :-
+    a,
+    (   b,
+        c
+    ;   d
+    ).
+Although ;/2 is a control structure that is normally handled by the compiler, SWI-Prolog implements ;/2 as a true predicate to support call/2 and friends as well as to allow for querying predicate properties, for example to support code analysis.
+
+:Goal1 | :Goal2
+Equivalent to ;/2. Retained for compatibility only. New code should use ;/2.
+[ISO]:Condition -> :Action
+If-then and If-Then-Else. The ->/2 construct commits to the choices made at its left-hand side, destroying choice points created inside the clause (by ;/2), or by goals called by this clause. Unlike !/0, the choice point of the predicate as a whole (due to multiple clauses) is not destroyed. Disregarding the interaction with !/0, the combination ;/2 and ->/2 acts as if defined as:
+If -> Then; _Else :- If, !, Then.
+If -> _Then; Else :- !, Else.
+If -> Then :- If, !, Then.
+Please note that (If -> Then) acts as (If -> Then ; fail), making the construct fail if the condition fails. This unusual semantics is part of the ISO and all de-facto Prolog standards.
+
+Please note that (if->then;else) is read as ((if->then);else) and that the combined semantics of this syntactic construct as defined above is different from the simple nesting of the two individual constructs, i.e., the semantics of ->/2 changes when embedded in ;/2. See also once/1.
+
+As with ;/2, this construct is always nested in parenthesis. Here is an example of the preferred layout for SWI-Prolog.
+
+p :-
+    a,
+    (   b,
+        c
+    ->  d,
+        e
+    ;   f
+    ->  g
+    ;   h
+    ).
+:Condition *-> :Action ; :Else
+This construct implements the so-called‘soft-cut'. The control is defined as follows: If Condition succeeds at least once, the semantics is the same as (call(Condition), Action).73 If Condition does not succeed, the semantics is that of (\+ Condition, Else). In other words, if Condition succeeds at least once, simply behave as the conjunction of call(Condition) and Action, otherwise execute Else. The construct is known under the name if/3 in some other Prolog implementations.
+The construct A *-> B, i.e., without an Else branch, the semantics is the same as (call(A), B).
+
+This construct is rarely used. An example use case is the implementation of optional in sparql. The optional construct should preserve all solutions if the argument succeeds as least once but still succeed otherwise. This is implemented as below.
+
+optional(Goal) :-
+    (   Goal
+    *-> true
+    ;   true
+    ).
+Now calling e.g., optional(member(X, [a,b])) has the solutions X=a and X=b, while optional(member(X,[])) succeeds without binding X.
+
+[ISO]\+ :Goal
+True if‘Goal' cannot be proven (mnemonic: + refers to provable and the backslash (\) is normally used to indicate negation in Prolog). In contrast to the ISO standard, but compatible with several other Prolog systems, SWI-Prolog implements \+/1 as a control structure. This implies that its argument is compiled as part of the enclosing clause and possible variables in goal positions are translated to call/1. As a result, if such a variable is at runtime bound to a (!/0), the cut is scoped to the call/1 call rather than the enclosing \+/1.
+Many Prolog implementations (including SWI-Prolog) provide not/1. The not/1 alternative is deprecated due to its strong link to logical negation.
+
+
+Important
+
+append(?List1, ?List2, ?List1AndList2)
+List1AndList2 is the concatenation of List1 and List2
+
+append(+ListOfLists, ?List)
+Concatenate a list of lists. Is true if ListOfLists is a list of lists, and List is the concatenation of these lists.
+ListOfLists	must be a list of possibly partial lists
+
+prefix(?Part, ?Whole)
+True iff Part is a leading substring of Whole. This is the same as append(Part, _, Whole).
+
+select(?Elem, ?List1, ?List2)
+Is true when List1, with Elem removed, results in List2. This implementation is determinsitic if the last element of List1 has been selected.
+[semidet]selectchk(+Elem, +List, -Rest)
+Semi-deterministic removal of first element in List that unifies with Elem.
+
+[nondet]select(?X, ?XList, ?Y, ?YList)
+Select from two lists at the same position. True if XList is unifiable with YList apart a single element at the same position that is unified with X in XList and with Y in YList. A typical use for this predicate is to replace an element, as shown in the example below. All possible substitutions are performed on backtracking.
+?- select(b, [a,b,c,b], 2, X).
+X = [a, 2, c, b] ;
+X = [a, b, c, 2] ;
+false.
+See also
+selectchk/4 provides a semidet version.
+
+[semidet]selectchk(?X, ?XList, ?Y, ?YList)
+Semi-deterministic version of select/4.
+
+nextto(?X, ?Y, ?List)
+True if Y directly follows X in List.
+
+[det]delete(+List1, @Elem, -List2)
+Delete matching elements from a list. True when List2 is a list with all elements from List1 except for those that unify with Elem. Matching Elem with elements of List1 is uses \+ Elem \= H, which implies that Elem is not changed.
+See also
+select/3, subtract/3.
+deprecated
+There are too many ways in which one might want to delete elements from a list to justify the name. Think of matching (= vs. ==), delete first/all, be deterministic or not.
+
+nth0(?Index, ?List, ?Elem)
+True when Elem is the Index’th element of List. Counting starts at 0.
+Errors
+type_error(integer, Index) if Index is not an integer or unbound.
+See also
+nth1/3.
+
+nth1(?Index, ?List, ?Elem)
+Is true when Elem is the Index’th element of List. Counting starts at 1.
+See also
+nth0/3.
+
+[det]nth0(?N, ?List, ?Elem, ?Rest)
+Select/insert element at index. True when Elem is the N’th (0-based) element of List and Rest is the remainder (as in by select/3) of List. For example:
+?- nth0(I, [a,b,c], E, R).
+I = 0, E = a, R = [b, c] ;
+I = 1, E = b, R = [a, c] ;
+I = 2, E = c, R = [a, b] ;
+false.
+?- nth0(1, L, a1, [a,b]).
+L = [a, a1, b].
+
+[det]nth1(?N, ?List, ?Elem, ?Rest)
+As nth0/4, but counting starts at 1.
+last(?List, ?Last)
+Succeeds when Last is the last element of List. This predicate is semidet if List is a list and multi if List is a partial list.
+
+reverse(?List1, ?List2)
+Is true when the elements of List2 are in reverse order compared to List1. 
+
+same_length(?List1, ?List2)
+Is true when List1 and List2 are lists with the same number of elements.
+
+numlist(+Low, +High, -List)
+List is a list [Low, Low+1, ... High]. Fails if High < Low.
+
+is_set(@Set)
+True if Set is a proper list without duplicates. Equivalence is based on ==/2. The implementation uses sort/2, which implies that the complexity is N*log(N) and the predicate may cause a resource-error. There are no other error conditions.
+[det]list_to_set(+List, ?Set)
+True when Set has the same elements as List in the same order. The left-most copy of duplicate elements is retained. List may contain variables. Elements E1 and E2 are considered duplicates iff E1 == E2 holds. The complexity of the implementation is N*log(N).
+Errors
+List is type-checked.
+See also
+sort/2 can be used to create an ordered set. Many set operations on ordered sets are order N rather than order N**2. The list_to_set/2 predicate is more expensive than sort/2 because it involves, two sorts and a linear scan.
+Compatibility
+Up to version 6.3.11, list_to_set/2 had complexity N**2 and equality was tested using =/2.
+[det]intersection(+Set1, +Set2, -Set3)
+True if Set3 unifies with the intersection of Set1 and Set2. The complexity of this predicate is |Set1|*|Set2|. A set is defined to be an unordered list without duplicates. Elements are considered duplicates if they can be unified.
+See also
+ord_intersection/3.
+[det]union(+Set1, +Set2, -Set3)
+True if Set3 unifies with the union of the lists Set1 and Set2. The complexity of this predicate is |Set1|*|Set2|. A set is defined to be an unordered list without duplicates. Elements are considered duplicates if they can be unified.
+See also
+ord_union/3
+[semidet]subset(+SubSet, +Set)
+True if all elements of SubSet belong to Set as well. Membership test is based on memberchk/2. The complexity is |SubSet|*|Set|. A set is defined to be an unordered list without duplicates. Elements are considered duplicates if they can be unified.
+See also
+ord_subset/2.
+[det]subtract(+Set, +Delete, -Result)
+Delete all elements in Delete from Set. Deletion is based on unification using memberchk/2. The complexity is |Delete|*|Set|. A set is defined to be an unordered list without duplicates. Elements are considered duplicates if they can be unified.

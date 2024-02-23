@@ -1,0 +1,48 @@
+ex1:
+
+srd(vid,[]).
+srd(arb(R,T,U),L) :- srd(T,L1), srd(U,L2), append(L1,[R|L2],L).
+
+bt_ins(N,vid,arb(N,vid,vid)).
+bt_ins(N,arb(R,T,U),arb(R,Z,U)) :- N < R, bt_ins(N,T,Z).
+bt_ins(N,arb(R,T,U),arb(R,T,Z)) :- N >= R, bt_ins(N,U,Z).
+
+bt_list([],vid).
+bt_list([H|T],U) :- bt_list(T,B), bt_ins(H,B,U).
+
+bt_sort(L,M) :- bt_list(L,T), srd(T,M).
+
+ex2:
+
+flatten([],[]).
+flatten([H|T],[H|R]) :- not(is_list(H)), flatten(T,R).
+flatten([H|T],R) :- is_list(H), flatten(H,X), flatten(T,Y), append(X,Y,R).
+
+flattend(L,R) :- flattendh(L,(R,[])).
+flattendh([],(R,R)).
+flattendh([H|T], ([H|R],S)) :- not(is_list(H)), flattendh(T,(R,S)).
+flattendh([H|T],(R,S)) :- is_list(H), flattendh(H,(R,N)), flattendh(T,(N,S)).
+
+ex3:
+
+quicksortd(L,R) :- quicksortdh(L,(R,[])).
+quicksortdh([],(R,R)).
+quicksortdh([H|T],(R,S)) :- split(H,T,A,B), quicksortdh(A,(R,[H|N])),
+                                            quicksortdh(B,(N,S)).
+
+ex4:
+
+parA --> a, imparA.
+parA --> b, parA.
+parA --> [].
+imparA --> a, parA.
+imparA --> b, imparA.
+a --> [a].
+b --> [b].
+
+ex5:
+
+ex --> [].
+ex --> a, ex, b.
+a --> [a].
+b --> [b].

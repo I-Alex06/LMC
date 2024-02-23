@@ -1,0 +1,62 @@
+Var2
+
+
+removeEven(L,R):- length(L,I),I2 is I//2, re(L,R2,I2),reverse(R,R2).
+re(_,[],0).
+re(L,[Hr|Tr],I):-I>0,I2 is I-1,I3 is I*2,nth1(I3,L,Hr),re(L,Tr,I2).
+%predicatul removeEven calculeaz nr de elemente pe care ar trebui sa le aibe lista rezulatat, dupa acea predicatul ajutator re/3 produce lista rezultanta cu elementele puse in ordine inversa iar predicatul reverse "rastoarna lista".
+%regula re adauga pe rand la inceputul listei elementele de pe pozitii impare folosinduse de un index(index= 2*contor),cu ajutorul regulii predefinite nth1 care incepe de la 1.
+
+mergePts(L1,L2,R):-append(L1,L2,L3),findall(X, functorl(X,p,2,L3), Res), same_length(L3,Res),sort(2,@=<,L3,R).%,remove_duplicates(R2,R).
+%regula mergePts concateaza cele 2 liste folosind append si dupa le sorteaza folosind sort cu argumentele 2(semnificand dupa al catelea argument al elemntului curent sa se faca sortarea), @=<(semnificand ordonare crescatoare in care se pastreaza duplicatele),L3(lista de sortat),R(lista sortata).
+functorl(X,F,A,L):-member(X,L), functor(X,F,A).
+%mergePts(L1,L2,R):-append(L1,L2,L3),insertsort(L3,R).
+
+/*
+insertsort([],[]).
+insertsort([H|T],L) :- insertsort(T,L1), insert(H,L1,L).
+
+insert(p(X,Y),[],[p(X,Y)]).
+insert(p(X,Y),[p(X2,Y2)|T],[p(X,Y)|[p(X2,Y2)|T]]) :- Y < Y2.
+insert(p(X,Y),[p(X2,Y2)|T],[p(X2,Y2)|L]) :- Y >= Y2, insert(p(X,Y),T,L).
+*/
+
+/*
+quicksort([],[]).
+quicksort([H|T],L) :- split(H,T,A,B), quicksort(A,M), quicksort(B,N),
+                        append(M,[H|N],L).
+split(_,[],[],[]).
+split(p(X2,Y2),[p(X,Y)|T],[p(X,Y)|A],B) :- Y < Y2, split(p(X2,Y2),T,A,B).
+split(p(X2,Y2),[p(X,Y)|T],A,[p(X,Y)|B]) :- Y >= Y2, split(p(X2,Y2),T,A,B).
+*/
+
+%remove_duplicates([],[]).
+%remove_duplicates([H|L],M) :- remove_duplicates(L,M), member(H,M).
+%remove_duplicates([H|L],[H|M]) :- remove_duplicates(L,M), not(member(H,M)).
+
+Var1
+
+removeOdd([],[]).
+removeOdd([H1,H2|T],[H1|Tr]):-length([H1,H2|T],I),I>=1,removeOdd(T,Tr).
+removeOdd([H1|T],[H1|Tr]):-length([H1|T],I),I=:=1,removeOdd(T,Tr).
+/*regula removeOdd ia elementele 2 cate 2 daca lista este de lungime 2 sau mai mare si pastreaza in lista rezultat primul element
+  daca lista mai are doar un element acesta este pastrat in lista rezultant, iar daca este vida si lista rezultant va fi vida, urmand sa se unifice in mod recursiv valorile "pastrate" */
+mergePts(L1,L2,R):-append(L1,L2,L3),quicksort(L3,R).
+quicksort([],[]).
+quicksort([H|T],L) :- split(H,T,A,B), quicksort(A,M), quicksort(B,N),
+                        append(M,[H|N],L).
+split(_,[],[],[]).
+split(p(X,Y),[p(X2,Y2)|T],[p(X2,Y2)|A],B) :- X2 < X, split(p(X,Y),T,A,B).
+split(p(X,Y),[p(X2,Y2)|T],A,[p(X2,Y2)|B]) :- X2 >= X, split(p(X,Y),T,A,B).
+/* mergePts concateneaza cele 2 liste folosind append iar apoi le sorteaza folosind 
+   quicksort(modificat pentru a functiona cu p(X,Y) si a sorta in functie de X) de la lab 3 
+ * /
+
+%ex3:
+
+vars(V,[V]) :- atom(V).
+vars(non(X),S) :- vars(X,S).
+vars(si(X,Y),S) :- vars(X,T), vars(Y,U), append(T,U,S).
+vars(sau(X,Y),S) :- vars(X,T), vars(Y,U), append(T,U,S).
+vars(imp(X,Y),S) :- vars(X,T), vars(Y,U), append(T,U,S).
+noDuplicateVar(X):- vars(X,L),is_set(L).
